@@ -15,7 +15,7 @@
 
 sudo su - 
 
-endpoint=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/$ENDPOINT -H "Metadata-Flavor: Google")
+endpoint=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/ENDPOINT -H "Metadata-Flavor: Google")
 
 if [ -x /bin/firewall-cmd ]
 then
