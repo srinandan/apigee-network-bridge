@@ -13,41 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-./check-prereqs.sh $1 $2 $3
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  exit 1
-fi
-
 project=$1
 region=$2
-vpc_name=default
+buncket_name=apigee-nw-bridge-$project
 
-./setup-gcs.sh $1 $2
+echo "Create GCS bucket\n"
+# create a bucket
+gsutil mb -p $project -c STANDARD -l $region -b on gs://apigee-nw-bridge-$project
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "unable to create bucket"
+  exit 1
+fi
+
+echo "Copy file to GCS bucket\n"
+# copy file to bucket
+gsutil cp network-bridge.sh gs://apigee-nw-bridge-$project
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "unable to add file to bucket"
+  exit 1
+fi
+
+echo "Enable public access\n"
+# enable full access to file
+#gsutil iam ch allUsers:objectViewer gs://apigee-nw-bridge-$project
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
 fi
-
-./setup-mig.sh $1 $2
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  exit 1
-fi
-
-while true; do
-    read -p "Do you to proceed with the creation and configuration of GCLB?" yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please enter yes or no.";;
-    esac
-done
-
-./setup-loadbalancer.sh $1 $2
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  exit 1
-fi
-
-exit 0
