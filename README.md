@@ -24,6 +24,14 @@ token="$(gcloud auth print-access-token)"
 curl -H "Authorization: Bearer $token" https://apigee.googleapis.com/v1/organizations/{org}/instances
 ```
 
+### VPC Peering
+
+If you haven't done so already, use this script to configure Service Networking to peer with Apigee
+
+```bash
+./setup-peering.sh $project-id
+```
+
 ## Installation
 
 ```bash
@@ -69,6 +77,14 @@ Chain OUTPUT (policy ACCEPT 3521 packets, 240K bytes)
 Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination         
 37370 2271K MASQUERADE  all  --  *      *       0.0.0.0/0            0.0.0.0/0     
+```
+
+## Clean up
+
+To clean up provisioned instances, run
+
+```bash
+./cleanup-network.sh $project-id $region
 ```
 
 ___
