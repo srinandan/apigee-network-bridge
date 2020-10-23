@@ -22,7 +22,7 @@ region=$2
 
 echo "project id is " $1 
 echo "region name is " $2
-echo "Apigee endpoint is " $2
+echo "Apigee endpoint is " $3
 
 if [ -z "$1" ]
   then
