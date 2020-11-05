@@ -44,6 +44,12 @@ Example:
 ./setup-network.sh foo us-west1 10.5.8.2
 ```
 
+NOTE: The VPC Name is set to `default`. If you wish to use a different network, pass that as the 4th parameter. Like this
+
+```bash
+./setup-network.sh foo us-west1 10.5.8.2 my-network
+```
+
 ### Installation Explained
 
 1. [Check Pre-requisites](./check-prereqs.sh)

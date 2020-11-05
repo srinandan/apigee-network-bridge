@@ -22,7 +22,13 @@ fi
 project=$1
 region=$2
 apigeeip=$3
-vpc_name=default
+
+if [ -z "$4" ]
+  then
+    vpc_name=$4
+else
+    vpc_name=default
+fi
 
 ./setup-gcs.sh $1 $2
 RESULT=$?
