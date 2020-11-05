@@ -15,6 +15,7 @@
 
 project=$1
 region=$2
+vpc_name=$4
 mig_name=apigee-network-bridge-$region-mig
 
 echo "Create GCE instance template\n"

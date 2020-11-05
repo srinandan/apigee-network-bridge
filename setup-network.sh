@@ -21,6 +21,7 @@ fi
 
 project=$1
 region=$2
+apigeeip=$3
 vpc_name=default
 
 ./setup-gcs.sh $1 $2
@@ -29,7 +30,7 @@ if [ $RESULT -ne 0 ]; then
   exit 1
 fi
 
-./setup-mig.sh $1 $2
+./setup-mig.sh $1 $2 $apigeeip $vpc_name
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
