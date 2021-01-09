@@ -21,6 +21,12 @@ variable "region1" {
   description = "Region to create GCE instances for Apigee."
 }
 
+variable "region1_cidr_range" {
+  type        = string
+  default     = "10.138.0.0/20"
+  description = "Region's CIDR range'"
+}
+
 # Define the IP Address for Apigee's instance (https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.instances/list)
 variable "apigee_region1_endpoint" {
   type        = string
@@ -35,6 +41,17 @@ data "template_file" "apigee-region1-startup-script" {
   vars = {
     endpoint    = var.apigee_region1_endpoint
   }
+}
+
+# Enable Private Google Access configuration
+resource "google_compute_subnetwork" "default" {
+  provider = google-beta
+
+  name                     = "default"
+  ip_cidr_range            = var.region1_cidr_range
+  region                   = var.region1
+  network                  = var.gce_network
+  private_ip_google_access = true
 }
 
 # Define a GCE Instance template for private VMs

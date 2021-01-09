@@ -42,6 +42,18 @@ variable "apigee_key_path" {
   description = "file path for the TLS private key"  
 }
 
+variable "self_signed_cert_org_name" {
+  type        = string
+  default     = "Srinandan Sridhar"
+  description = "TLS Organization name"  
+}
+
+variable "self_signed_cert_common_name" {
+  type        = string
+  default     = "api.srinandans.com"
+  description = "TLS common name"  
+}
+
 #
 # GCE Configuration
 # -------------------------------

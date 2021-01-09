@@ -53,11 +53,52 @@ resource "google_compute_firewall" "apigee" {
   target_tags = [ "apigee" ]
 }
 
+# Generate a private key
+resource "tls_private_key" "apigee-example" {
+  algorithm   = "RSA"
+}
+
+# Generate a self signed certificate for the example
+resource "tls_self_signed_cert" "apigee-example" {
+  key_algorithm   = "RSA"
+  private_key_pem = tls_private_key.apigee-example.private_key_pem
+
+  subject {
+    common_name  = var.self_signed_cert_common_name
+    organization = var.self_signed_cert_org_name
+  }
+
+  validity_period_hours = 8760
+
+  is_ca_certificate = true
+
+  dns_names = [
+    var.self_signed_cert_common_name
+  ]
+
+  #ip_addresses = [
+  #  google_compute_global_address.apigee.address
+  #]
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+
+  depends_on = [ 
+    tls_private_key.apigee-example
+  ]
+}
+
+# Use the self signed certificate from the example
 resource "google_compute_ssl_certificate" "apigee" {
   name_prefix = "apigee"
   description = "TLS certificates for APIs exposed by Apigee"
-  private_key = file(var.apigee_key_path)
-  certificate = file(var.apigee_cert_path)
+  #private_key = file(var.apigee_key_path)
+  private_key = tls_private_key.apigee-example.private_key_pem
+  #certificate = file(var.apigee_cert_path)
+  certificate = tls_self_signed_cert.apigee-example.cert_pem
 
   lifecycle {
     create_before_destroy = true
