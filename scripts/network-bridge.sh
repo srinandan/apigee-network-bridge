@@ -28,4 +28,7 @@ else
    iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination $endpoint
 fi
 
+sysctl -ew net.netfilter.nf_conntrack_buckets=1048576
+sysctl -ew net.netfilter.nf_conntrack_max=8388608
+
 exit 0
