@@ -23,11 +23,12 @@ fi
 project=$1
 region=$2
 
-./cleanup-gcs.sh $1 $2
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  exit 1
-fi
+# not using GCS
+#./cleanup-gcs.sh $1 $2
+#RESULT=$?
+#if [ $RESULT -ne 0 ]; then
+#  exit 1
+#fi
 
 ./cleanup-mig.sh $1 $2
 RESULT=$?

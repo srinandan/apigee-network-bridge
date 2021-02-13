@@ -30,11 +30,12 @@ else
     vpc_name=default
 fi
 
-./setup-gcs.sh $1 $2
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  exit 1
-fi
+#removing GCS setup
+#./setup-gcs.sh $1 $2
+#RESULT=$?
+#if [ $RESULT -ne 0 ]; then
+#  exit 1
+#fi
 
 ./setup-mig.sh $1 $2 $apigeeip $vpc_name
 RESULT=$?

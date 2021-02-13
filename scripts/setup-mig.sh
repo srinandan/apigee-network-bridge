@@ -26,7 +26,9 @@ gcloud compute instance-templates create $mig_name \
   --machine-type e2-micro --image-family ubuntu-minimal-1804-lts \
   --image-project ubuntu-os-cloud --boot-disk-size 10GB \
   --preemptible --no-address \
-  --metadata=ENDPOINT=$3,startup-script-url=gs://apigee-nw-bridge-$project/network-bridge.sh
+  --metadata=ENDPOINT=$3 \ 
+  --metadata-from-file startup-script=network-bridge.sh
+  
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
