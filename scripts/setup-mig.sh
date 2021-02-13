@@ -15,6 +15,7 @@
 
 project=$1
 region=$2
+endpoint=$3
 vpc_name=$4
 mig_name=apigee-network-bridge-$region-mig
 
@@ -25,9 +26,21 @@ gcloud compute instance-templates create $mig_name \
   --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
   --machine-type e2-micro --image-family ubuntu-minimal-1804-lts \
   --image-project ubuntu-os-cloud --boot-disk-size 10GB \
-  --preemptible --no-address \
-  --metadata=ENDPOINT=$3 \ 
-  --metadata-from-file startup-script=network-bridge.sh
+  --preemptible --no-address --can-ip-forward \
+  --metadata=ENDPOINT=$3,startup-script='#!/bin/sh
+sudo su - 
+
+endpoint=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/attributes/ENDPOINT -H "Metadata-Flavor: Google")
+
+sysctl -w net.ipv4.ip_forward=1
+sysctl -ew net.netfilter.nf_conntrack_buckets=1048576
+sysctl -ew net.netfilter.nf_conntrack_max=8388608
+
+
+iptables -t nat -A POSTROUTING -j MASQUERADE
+iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination $endpoint
+
+exit 0'
   
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
