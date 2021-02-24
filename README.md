@@ -35,7 +35,7 @@ If you haven't done so already, use this script to configure Service Networking 
 ## Installation
 
 * [Install via scripts](./scripts)
-* [Install via Terraform](./terraform)
+* [Install via Terraform](./tform)
 
 ___
 
