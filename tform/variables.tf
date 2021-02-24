@@ -20,7 +20,7 @@ terraform {
 
 variable "project" {
   type        = string
-  default     = "srinandans-apigee"
+  default     = "apigee-eval-script"
   description = "Project ID where Terraform is authenticated to run to create additional projects. If provided, Terraform will create the GKE and Vault cluster inside this project. If not given, Terraform will generate a new project."
 }
 
@@ -44,13 +44,13 @@ variable "apigee_key_path" {
 
 variable "self_signed_cert_org_name" {
   type        = string
-  default     = "Srinandan Sridhar"
+  default     = "Apigee Self-Signed Certificate"
   description = "TLS Organization name"  
 }
 
 variable "self_signed_cert_common_name" {
   type        = string
-  default     = "api.srinandans.com"
+  default     = "eval.apigee.net"
   description = "TLS common name"  
 }
 
@@ -92,4 +92,10 @@ variable "gce_network" {
   type        = string
   default     = "default"
   description = "The network to create GCE instances."
+}
+
+variable "gce_subnet" {
+  type        = string
+  default     = "default"
+  description = "The subnet to create GCE instances."
 }

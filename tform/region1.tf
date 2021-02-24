@@ -17,7 +17,7 @@
 # Define the region to setup regional infra like GCE
 variable "region1" {
   type        = string
-  default     = "us-west1"
+  default     = "us-central1"
   description = "Region to create GCE instances for Apigee."
 }
 
@@ -47,7 +47,7 @@ data "template_file" "apigee-region1-startup-script" {
 resource "google_compute_subnetwork" "default" {
   provider = google-beta
 
-  name                     = "default"
+  name                     = var.gce_subnet
   ip_cidr_range            = var.region1_cidr_range
   region                   = var.region1
   network                  = var.gce_network
@@ -58,6 +58,7 @@ resource "google_compute_subnetwork" "default" {
 resource "google_compute_instance_template" "apigee-region1" {
   name        = "${var.apigee_mig_prefix}${var.region1}"
   description = "This template is used by Apigee to bridge the network from GCLB to the tenant project."
+  region                   = var.region1
 
   tags = ["apigee"]
 
@@ -79,6 +80,7 @@ resource "google_compute_instance_template" "apigee-region1" {
 
   network_interface {
     network = var.gce_network
+    subnetwork = var.gce_subnet
   }
 
   metadata = {
@@ -89,7 +91,6 @@ resource "google_compute_instance_template" "apigee-region1" {
 resource "google_compute_region_instance_group_manager" "apigee-region1" {
   name               = "${var.apigee_mig_prefix}${var.region1}"
   base_instance_name = "${var.apigee_mig_prefix}${var.region1}"
-
   region               = var.region1
 
   version {
