@@ -23,4 +23,4 @@ gcloud compute instance-groups managed delete $mig_name --region $region
 
 echo "Delete GCE instance template\n"
 # delete gce template
-gcloud compute instance-templates delete $mig_name --region $region
+gcloud compute instance-templates delete $mig_name
