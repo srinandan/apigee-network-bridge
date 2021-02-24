@@ -25,6 +25,19 @@ apigeeip=$3
 vpc_name=$4
 subnet_name=$5
 
+if [ -z "$4" ]
+  then
+    vpc_name='default'
+    subnet_name='default'
+  else
+    vpc_name=$4
+    if [ -z "$5" ]
+      then
+        echo "A subnetwork is a mandatory parameter when specifying a custom network"
+        exit 1
+  fi
+fi
+
 #removing GCS setup
 #./setup-gcs.sh $1 $2
 #RESULT=$?
