@@ -19,8 +19,8 @@ mig_name=apigee-network-bridge-$region-mig
 
 echo "Deleting GCE Managed Instance Group\n"
 # Delete Instance Group
-gcloud compute instance-groups managed delete $mig_name
+gcloud compute instance-groups managed delete $mig_name --region $region
 
 echo "Delete GCE instance template\n"
 # delete gce template
-gcloud compute instance-templates delete $mig_name
+gcloud compute instance-templates delete $mig_name --region $region

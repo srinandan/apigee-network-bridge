@@ -18,7 +18,7 @@ region=$2
 backend_name=apigee-network-bridge-backend
 
 echo "Deleting forwarding rule\n"
-gcloud compute forwarding-rules delete apigee-https-lb-rule
+gcloud compute forwarding-rules delete apigee-https-lb-rule --global
 
 echo "Delete LB target https proxy\n"
 # Delete Load Balancing Target HTTPS Proxy
@@ -30,7 +30,7 @@ gcloud compute url-maps delete apigee-proxy-map
 
 echo "Delete backend service\n"
 # Create Backend Service
-gcloud compute backend-services delete $backend_name
+gcloud compute backend-services delete $backend_name --global
 
 echo "Delete Apigee health-check\n"
 # Create Health Check
