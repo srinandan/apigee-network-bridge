@@ -14,10 +14,10 @@ Example:
 ./setup-network.sh foo us-west1 10.5.8.2
 ```
 
-NOTE: The VPC Name is set to `default`. If you wish to use a different network, pass that as the 4th parameter. Like this
+NOTE: The VPC Name and subnet is set to `default`. If you wish to use a different network and subnetwork, pass that as the 4th and 5th parameter. Like this
 
 ```bash
-./setup-network.sh foo us-west1 10.5.8.2 my-network
+./setup-network.sh foo us-west1 10.5.8.2 my-network my-subnetwork
 ```
 
 ## Installation Explained
