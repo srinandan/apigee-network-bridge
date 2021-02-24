@@ -13,16 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo $1
-echo $2
-echo $3
-
 project=$1
 region=$2
+endpoint=$3
+vpc_name=$4
+subnet_name=$5
 
-echo "project id is " $1 
-echo "region name is " $2
-echo "Apigee endpoint is " $3
+if [ -z "$4" ]
+  then
+    vpc_name='default'
+    subnet_name='default'
+  else
+    vpc_name=$4
+    if [ -z "$5" ]
+      then
+        echo "A subnetwork is a mandatory parameter when specifying a custom network"
+        exit 1
+  fi
+fi
+
+echo "project id is " $project 
+echo "region name is " $region
+echo "Apigee endpoint is " $endpoint
+echo "VPC network is " $vpc_name
+echo "Subnetwork is " $subnet_name
 
 if [ -z "$1" ]
   then
@@ -65,7 +79,7 @@ if [ $RESULT -ne 0 ]; then
 fi
 
 echo "Check Private Google Access\n"
-gcloud compute networks subnets describe $vpc_name --region=$region --format="get(privateIpGoogleAccess)" | grep True 2>&1 >/dev/null
+gcloud compute networks subnets describe $subnet_name --region=$region --format="get(privateIpGoogleAccess)" | grep True 2>&1 >/dev/null
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "this script requires Private Google Access Configuration (https://cloud.google.com/vpc/docs/configure-private-google-access#config-pga)"

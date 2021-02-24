@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-./check-prereqs.sh $1 $2 $3
+./check-prereqs.sh $1 $2 $3 $4 $5
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
@@ -22,13 +22,8 @@ fi
 project=$1
 region=$2
 apigeeip=$3
-
-if [ -z "$4" ]
-  then
-    vpc_name=$4
-else
-    vpc_name=default
-fi
+vpc_name=$4
+subnet_name=$5
 
 #removing GCS setup
 #./setup-gcs.sh $1 $2
@@ -37,14 +32,14 @@ fi
 #  exit 1
 #fi
 
-./setup-mig.sh $1 $2 $apigeeip $vpc_name
+./setup-mig.sh $project $region $apigeeip $vpc_name $subnet_name
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
 fi
 
 while true; do
-    read -p "Do you to proceed with the creation and configuration of GCLB?" yn
+    read -p "Do you to proceed with the creation and configuration of GCLB? (Y/N)" yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit 0;;
@@ -52,7 +47,7 @@ while true; do
     esac
 done
 
-./setup-loadbalancer.sh $1 $2
+./setup-loadbalancer.sh $project $region $vpc_name
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
