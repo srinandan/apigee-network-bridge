@@ -13,10 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo $1
-echo $2
-echo $3
-
 project=$1
 region=$2
 

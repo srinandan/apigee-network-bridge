@@ -13,31 +13,75 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-./check-prereqs.sh $1 $2 $3
+network="default"
+subnet="default"
+
+#**
+# @brief    Displays usage details.
+#
+usage() {
+    echo -e "$*\n usage: $(basename "$0")" \
+        "-o <org> -e <env> -c <component> -n <namespace>\n" \
+        "example: $(basename "$0") -p my-proj -r us-west1 -i 10.75.0.2 \n" \
+        "Parameters:\n" \
+        "-p --prj       : GCP Project Id     (mandatory parameter)\n" \
+        "-r --reg       : GCP Region Name    (mandatory parameter)\n" \
+        "-i --ip        : Apigee Instance IP (mandatory parameter)\n" \
+        "-n --network   : Network name       (optional parameter; default is default)\n" \
+        "-s --subnet    : Subnet name        (optional parameter; default is default)\n"
+    exit 1
+}
+
+### Start of mainline code ###
+
+PARAMETERS=()
+while [[ $# -gt 0 ]]
+do
+    param="$1"
+
+    case $param in
+        -p|--prj)
+        project="$2"
+        shift
+        shift
+        ;;
+        -r|--reg)
+        region="$2"
+        shift
+        shift
+        ;;
+        -i|--ip)
+        apigeeip="$2"
+        shift
+        shift
+        ;;
+        -n|--network)
+        network="$2"
+        shift
+        shift
+        ;;
+        -s|--subnet)
+        subnet="$2"
+        shift
+        shift
+        ;;        
+        *)
+        PARAMETERS+=("$1")
+        shift
+        ;;
+    esac
+done
+
+set -- "${PARAMETERS[@]}"
+
+./check-prereqs.sh $project $region $apigeeip
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
+  usage
   exit 1
 fi
 
-project=$1
-region=$2
-apigeeip=$3
-
-if [ -z "$4" ]
-  then
-    vpc_name=$4
-else
-    vpc_name=default
-fi
-
-#removing GCS setup
-#./setup-gcs.sh $1 $2
-#RESULT=$?
-#if [ $RESULT -ne 0 ]; then
-#  exit 1
-#fi
-
-./setup-mig.sh $1 $2 $apigeeip $vpc_name
+./setup-mig.sh $project $region $apigeeip $network $subnet
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1
@@ -52,7 +96,7 @@ while true; do
     esac
 done
 
-./setup-loadbalancer.sh $1 $2
+./setup-loadbalancer.sh $project $region $network $subnet
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   exit 1

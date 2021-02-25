@@ -17,12 +17,13 @@ project=$1
 region=$2
 endpoint=$3
 vpc_name=$4
+subnet=$5
 mig_name=apigee-network-bridge-$region-mig
 
 echo "Create GCE instance template\n"
 # create a template
 gcloud compute instance-templates create $mig_name \
-  --project $project --region $region --network $vpc_name \
+  --project $project --region $region --network $vpc_name --subnet $subnet \
   --tags=https-server,apigee-envoy-proxy,gke-apigee-proxy \
   --machine-type e2-micro --image-family ubuntu-minimal-1804-lts \
   --image-project ubuntu-os-cloud --boot-disk-size 10GB \

@@ -15,6 +15,9 @@
 
 project=$1
 region=$2
+vpc_name=$3
+subnet=$4
+
 backend_name=apigee-network-bridge-backend
 
 # Reserve IP Address for Load Balancer
@@ -30,7 +33,7 @@ echo "Reserved IP: " $lb_ip
 # Create Firewall Rule to allow Load Balancer to access Envoy
 gcloud compute firewall-rules create k8s-allow-lb-to-apigee \
     --description "Allow incoming from GLB on TCP port 443 to Apigee Proxy" \
-    --project $project --network $vpc_name --allow=tcp:443 \
+    --project $project --network $vpc_name --subnet $subnet --allow=tcp:443 \
     --source-ranges=130.211.0.0/22,35.191.0.0/16 \
     --target-tags=gke-apigee-proxy
 
