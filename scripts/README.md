@@ -5,7 +5,7 @@ These instructions help setup a networking bridge to allow Google Cloud External
 ## Installation
 
 ```bash
-./setup-network.sh $project-id $region $apigee-instance-ip
+./setup-network.sh $PROJECTID $REGION $APIGEE_INSTANCE_IP
 ```
 
 Example:
@@ -29,7 +29,7 @@ NOTE: The VPC Name and subnet is set to `default`. If you wish to use a differen
 
 ## Validate Installation
 
-1. Use (or create) a GCE VM with an external IP address in the same region as the managed instance group.
+1. Use (or create) a GCE VM with an external IP address in the same REGION as the managed instance group.
 2. ssh to the GCE VM and then ssh to one of the VMs in the MIG
 3. Run the command to see the IP tables rules
 
@@ -60,7 +60,7 @@ Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
 To clean up provisioned instances, run
 
 ```bash
-./cleanup-network.sh $project-id $region
+./cleanup-network.sh $PROJECTID $REGION
 ```
 
 ___
