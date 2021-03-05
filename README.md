@@ -1,6 +1,6 @@
 # apigee-network-bridge
 
-This repo creates a network brdge between [Google Cloud Load Balancer](https://cloud.google.com/load-balancing/docs/https) and [Apigee public cloud](https://cloud.google.com/apigee/docs) running on GCP.
+This repo creates a network bridge between [Google Cloud Load Balancer](https://cloud.google.com/load-balancing/docs/https) and [Apigee public cloud](https://cloud.google.com/apigee/docs) running on GCP.
 
 ## Architecture
 

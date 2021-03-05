@@ -1,4 +1,4 @@
-# Setup Apigee Network Bring using Terraform
+# Setup Apigee Network Bridge using Terraform
 
 These instructions help setup a networking bridge via Terraform to allow Google Cloud External Load Balancers connect to the Apigee service.
 
