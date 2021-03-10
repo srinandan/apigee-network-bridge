@@ -60,10 +60,10 @@ if [ $RESULT -ne 0 ]; then
   exit 1
 fi
 
-#echo "Check Private Google Access\n"
-#gcloud compute networks subnets describe $vpc_name --region=$region --format="get(privateIpGoogleAccess)" | grep True 2>&1 >/dev/null
-#RESULT=$?
-#if [ $RESULT -ne 0 ]; then
-#  echo "this script requires Private Google Access Configuration (https://cloud.google.com/vpc/docs/configure-private-google-access#config-pga)"
-#  exit 1
-#fi
+echo "Check Private Google Access\n"
+gcloud compute networks subnets describe $vpc_name --region=$region --format="get(privateIpGoogleAccess)" | grep True 2>&1 >/dev/null
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "this script requires Private Google Access Configuration (https://cloud.google.com/vpc/docs/configure-private-google-access#config-pga)"
+  exit 1
+fi
