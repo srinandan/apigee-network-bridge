@@ -4,6 +4,44 @@ These instructions help setup a networking bridge to allow Google Cloud External
 
 ## Installation
 
+Setup some environment variables:
+AUTH="Authorization: Bearer $(gcloud auth print-access-token)"
+PROJECTID=your-apigee-gcp-project-id
+REGION=your-gcp-region
+
+
+APIGEE_INSTANCE_IP: Follow this steps to obtain the Apigee instance IP:
+
+Get the list of instances:
+
+```bash
+curl -i -H "$AUTH" -X GET \
+  -H "Content-Type:application/json" \
+  https://apigee.googleapis.com/v1/organizations/ORG_NAME/instances
+```
+
+Get the details of your instance to get your APIGEE_INSTANCE_IP:
+
+```bash
+curl -i -H "$AUTH" -X GET \
+  -H "Content-Type:application/json" \
+  https://apigee.googleapis.com/v1/organizations/ORG_NAME/instances/INSTANCE_NAME
+```
+
+The response shows the IP address of the internal load balancer in the host field:
+
+
+```bash
+{
+  "name": "eval-us-west1-a",
+  "location": "us-west1-a",
+  "host": "10.86.0.2",
+  "port": "443",
+  "state": "ACTIVE"
+}
+``
+
+
 ```bash
 ./setup-network.sh $PROJECTID $REGION $APIGEE_INSTANCE_IP
 ```
@@ -11,27 +49,26 @@ These instructions help setup a networking bridge to allow Google Cloud External
 Example:
 
 ```bash
-./setup-network.sh foo us-west1 10.5.8.2
+./setup-network.sh foo us-west1 10.86.0.2
 ```
 
 NOTE: The VPC Name and subnet is set to `default`. If you wish to use a different network and subnetwork, pass that as the 4th and 5th parameter. Like this
 
 ```bash
-./setup-network.sh foo us-west1 10.5.8.2 my-network my-subnetwork
+./setup-network.sh foo us-west1 10.86.0.2 my-network my-subnetwork
 ```
 
 ## Installation Explained
 
 1. [Check Pre-requisites](./check-prereqs.sh)
-2. [Create a GCS Bucket](./setup-gcs.sh) and store VM startup script there
-3. [Create a GCE Instance template](./setup-mig.sh) (with the startup script created previously) and managed instance group with that template. 
-4. [Provision a load balancer](./setup-loadbalancer.sh) and add the MIG as the backend service
+2. [Create a GCE Instance Group with some IP table rules](./setup-network.sh) (this script will create a group of VMs with some iptables rules to forward traffic from the GLB into Apigee)
+4. [Provision a load balancer](./setup-loadbalancer.sh) It adds the MIG as the backend service and creates a GLB with a self-signed certificate
 
 ## Validate Installation
 
-1. Use (or create) a GCE VM with an external IP address in the same REGION as the managed instance group.
-2. ssh to the GCE VM and then ssh to one of the VMs in the MIG
-3. Run the command to see the IP tables rules
+1. Go to the GCP console under Compute Engine and check that the VM instance group was created.
+1. SSH to one of the VMs in the MIG created previously with the ./setup-network.sh script
+3. Run the following command to see the IP tables rules
 
 ```bash
 sudo iptables -t nat -n -v -L

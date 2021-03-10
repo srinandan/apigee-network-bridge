@@ -38,13 +38,6 @@ if [ -z "$4" ]
   fi
 fi
 
-#removing GCS setup
-#./setup-gcs.sh $1 $2
-#RESULT=$?
-#if [ $RESULT -ne 0 ]; then
-#  exit 1
-#fi
-
 ./setup-mig.sh $project $region $apigeeip $vpc_name $subnet_name
 RESULT=$?
 if [ $RESULT -ne 0 ]; then

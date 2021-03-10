@@ -69,11 +69,3 @@ gcloud config set project $project
 
 #login to the project
 gcloud auth login
-
-echo "Check gsutil\n"
-gsutil 2>&1 >/dev/null
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "this script depends on gsutil (https://cloud.google.com/storage/docs/gsutil_install)"
-  exit 1
-fi
