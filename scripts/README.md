@@ -20,14 +20,6 @@ curl -i -H "$AUTH" -X GET \
   https://apigee.googleapis.com/v1/organizations/ORG_NAME/instances
 ```
 
-Get the details of your instance to get your APIGEE_INSTANCE_IP:
-
-```bash
-curl -i -H "$AUTH" -X GET \
-  -H "Content-Type:application/json" \
-  https://apigee.googleapis.com/v1/organizations/ORG_NAME/instances/INSTANCE_NAME
-```
-
 The response shows the IP address of the internal load balancer in the host field:
 
 

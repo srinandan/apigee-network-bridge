@@ -74,7 +74,7 @@ fi
 echo "Create GCE auto-scaling\n"
 # Configure Autoscaling
 # NOTE: Change max replicas if necessary
-existingAutoscaling=$( gcloud compute instance-groups managed describe $mig_name --region $REGION|grep 'autoscaler'|awk '{print $1}')
+existingAutoscaling=$( gcloud compute instance-groups managed describe $mig_name --region $region|grep 'autoscaler'|awk '{print $1}')
 if [ -z "$existingAutoscaling" ]; then
   gcloud compute instance-groups managed set-autoscaling $mig_name \
       --project $project --region $region --max-num-replicas 3 \
