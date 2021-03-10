@@ -14,8 +14,6 @@ This repo contains scripts that provisions a managed instance group with NAT rul
 
 * An Apigee org is provisioned. See [here](https://cloud.google.com/apigee/docs/api-platform/get-started/overview) for instructions. 
 * gcloud CLI is installed
-* gsutil CLI is installed
-* The GCP region which has the Apigee runtime instance enabled, has [Private Google Access](https://cloud.google.com/vpc/docs/configure-private-google-access#config-pga) enabled
 
 To know which runtime instances you have, run the command:
 
