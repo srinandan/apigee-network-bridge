@@ -26,7 +26,7 @@ curl -H "Authorization: Bearer $token" https://apigee.googleapis.com/v1/organiza
 
 ### VPC Peering
 
-If you haven't done so already, use this script to configure Service Networking to peer with Apigee
+If you haven't done so already, use this script to configure Service Networking to peer with Apigee. NOTE: You can skip this step if you have already run the eval wizard https://apigee.google.com/setup/eval
 
 ```bash
 ./setup-peering.sh $project-id
