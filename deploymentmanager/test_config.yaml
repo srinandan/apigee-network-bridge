@@ -2,7 +2,7 @@ imports:
 - path: apigee-network-bridge.jinja
 
 resources:
-- name: us-east
+- name: apigee-network-bridge
   type: apigee-network-bridge.jinja
   properties:
     zone: us-east4-a
