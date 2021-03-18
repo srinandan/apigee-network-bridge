@@ -1,9 +1,9 @@
 imports:
-- path: apigee-x-network-bridge.jinja
+- path: apigee-network-bridge.jinja
 
 resources:
 - name: us-east
-  type: apigee-x-network-bridge.jinja
+  type: apigee-network-bridge.jinja
   properties:
     zone: us-east4-a
     machineType: e2-micro

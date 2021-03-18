@@ -55,7 +55,7 @@ description:
 input:
   properties:
     - name: zone
-      title: Zone of the Apigee Org to connect to.
+      title: Zone of the Apigee Organization
     - name: domain
       title: Hostname for this installation
       subtext: >
@@ -100,28 +100,37 @@ runtime:
       - label: Instance machine type
         value: '{{ properties().machineType }}'
   primaryButton:
-    label: Create and deploy a proxy
+    label: Validate the Load Balancer
     type: TYPE_URL
-    action: https://apigee.google.com/edge
+    action: "http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb-name}}"
   suggestedActions:
     - heading: Update DNS entry
       description: >
         Create an A record {{ outputs().domain }} to {{ outputs().externalIP }}
-      showIf: '{{ properties().domain }}'
+      showIf: '{{ outputs().isCustomDomain }}'
     - heading: Add domain to the environment group
       description: >
         Add the {{ outputs().domain }} to the environment group.
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Validate the Load Balancer
+      description: >
+        Verify the SSL certs have been provisioned on the Load Balancer
+        <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb-name}}">configuration page</a>
     - heading: Upload your own certs
       description: >
         This solution will deploy Google-managed SSL certs.
         If you want to use your own certificates for {{ outputs().domain }} you
-        can upload that to the load balancer configuration.
+        can upload that to the <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb-name}}">load balancer configuration</a>.
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Make an API Call
+      description: >
+        curl -i -k \<br/>
+          -H "Host: {{ outputs().domain }}" \<br/>
+          https://{{ outputs().externalIP }}/hello-world <br/>
     - heading: More Documentation
       description: >-
         For more information please visit our solutions page <a href="https://github.com/srinandan/apigee-network-bridge">here</a>.
-
 annotations:
   autogenSpecType: 'MULTI_VM'
   vmImage0: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/family/debian-10
-
 metadata_version: v1

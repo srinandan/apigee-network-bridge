@@ -27,7 +27,7 @@ required:
 properties:
   zone:
     type: string
-    description: Apigee zone for the organization
+    description: Zone of the Apigee organization
     x-googleProperty:
       type: GCE_ZONE
   domain:

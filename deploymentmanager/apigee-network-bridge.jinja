@@ -183,9 +183,17 @@ outputs:
   {% if properties['domain'] %}
     value: {{ properties['domain'] }}
   {% else %}
-    value: $(ref.{{ DEPLOYMENT_NAME }}-externalip.address).xip.io
+    value: {{ projectName }}-eval.apigee.net
   {% endif %}
   - name: externalIP
     value: $(ref.{{ DEPLOYMENT_NAME }}-externalip.address)
   - name: region
     value: {{ REGION }}
+  - name: lb-name
+    value: {{ DEPLOYMENT_NAME }}-urlmap
+  - name: isCustomDomain
+  {% if properties['domain'] %}
+    value: True
+  {% else %}
+    value: False
+  {% endif %}
