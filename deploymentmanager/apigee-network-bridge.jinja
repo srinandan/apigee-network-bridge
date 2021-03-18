@@ -189,7 +189,7 @@ outputs:
     value: $(ref.{{ DEPLOYMENT_NAME }}-externalip.address)
   - name: region
     value: {{ REGION }}
-  - name: lb-name
+  - name: lb_name
     value: {{ DEPLOYMENT_NAME }}-urlmap
   - name: isCustomDomain
   {% if properties['domain'] %}

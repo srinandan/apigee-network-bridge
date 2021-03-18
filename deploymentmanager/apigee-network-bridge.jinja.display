@@ -102,7 +102,7 @@ runtime:
   primaryButton:
     label: Validate the Load Balancer
     type: TYPE_URL
-    action: "http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb-name}}"
+    action: "http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb_name}}"
   suggestedActions:
     - heading: Update DNS entry
       description: >
@@ -115,18 +115,23 @@ runtime:
     - heading: Validate the Load Balancer
       description: >
         Verify the SSL certs have been provisioned on the Load Balancer
-        <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb-name}}">configuration page</a>
+        <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb_name}}">configuration page</a>
     - heading: Upload your own certs
       description: >
         This solution will deploy Google-managed SSL certs.
         If you want to use your own certificates for {{ outputs().domain }} you
-        can upload that to the <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb-name}}">load balancer configuration</a>.
+        can upload that to the <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb_name}}">load balancer configuration</a>.
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Make an API Call
+      description: >
+        curl -i https://{{ outputs().domain }}/hello-world <br/>
       showIf: '{{ outputs().isCustomDomain }}'
     - heading: Make an API Call
       description: >
         curl -i -k \<br/>
           -H "Host: {{ outputs().domain }}" \<br/>
           https://{{ outputs().externalIP }}/hello-world <br/>
+      showIf: '{{ ! outputs().isCustomDomain }}'
     - heading: More Documentation
       description: >-
         For more information please visit our solutions page <a href="https://github.com/srinandan/apigee-network-bridge">here</a>.
