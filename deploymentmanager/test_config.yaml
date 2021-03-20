@@ -6,7 +6,7 @@ resources:
   type: apigee-network-bridge.jinja
   properties:
     zone: us-east4-a
-    machineType: e2-micro
+    machineType: e2-medium
     serviceAccount: apigee-network-bridge@project-id.iam.gserviceaccount.com
     domain: ""
     network: https://www.googleapis.com/compute/v1/projects/project-id/global/networks/default

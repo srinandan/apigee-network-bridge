@@ -29,7 +29,9 @@ resources:
   type: compute.v1.instanceTemplate
   properties:
     properties:
-      machineType: e2-micro
+      machineType: e2-medium
+      scheduling:
+        preemptible: true
       tags:
         items:
         - https-server

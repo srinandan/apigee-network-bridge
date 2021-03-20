@@ -36,7 +36,7 @@ properties:
   machineType:
     type: string
     description: Machine type
-    default: n1-standard-1
+    default: e2-medium
     x-googleProperty:
       type: GCE_MACHINE_TYPE
       zoneProperty: zone
