@@ -95,13 +95,29 @@ resource "tls_self_signed_cert" "apigee-example" {
 resource "google_compute_ssl_certificate" "apigee" {
   name_prefix = "apigee"
   description = "TLS certificates for APIs exposed by Apigee"
+
+  # if you are providing a key/cert, uncomment the following two lines
   #private_key = file(var.apigee_key_path)
-  private_key = tls_private_key.apigee-example.private_key_pem
   #certificate = file(var.apigee_cert_path)
-  certificate = tls_self_signed_cert.apigee-example.cert_pem
+
+  # if using self signed certificates, uncomment the following two lines
+  #private_key = tls_private_key.apigee-example.private_key_pem
+  #certificate = tls_self_signed_cert.apigee-example.cert_pem
+
+  #default: this script provisions xip.io certs for testing/demo purposes
+
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+# Use a GCP Managed TLS Certificate
+resource "google_compute_managed_ssl_certificate" "apigee-demo" {
+  name = "apigee-demo"
+
+  managed {
+    domains = ["${google_compute_global_address.apigee.address}.${var.managed_ssl_dns_provider}"]
   }
 }
 
@@ -126,7 +142,12 @@ resource "google_compute_url_map" "apigee" {
 resource "google_compute_target_https_proxy" "apigee" {
   name             = "apigee"
   url_map          = google_compute_url_map.apigee.id
-  ssl_certificates = [google_compute_ssl_certificate.apigee.id]
+
+  # uncomment this line to use a self-signed cert or a self-managed cert
+  #ssl_certificates = [google_compute_ssl_certificate.apigee.id]
+  
+  #default: use the Google managed xip.io cert
+  ssl_certificates = [google_compute_managed_ssl_certificate.apigee-demo.id]
 }
 
 # 

@@ -54,6 +54,12 @@ variable "self_signed_cert_common_name" {
   description = "TLS common name"  
 }
 
+variable "managed_ssl_dns_provider" {
+  type        = string
+  default     = "xip.io"
+  description = "DNS provider for demos and testing"    
+}
+
 #
 # GCE Configuration
 # -------------------------------
