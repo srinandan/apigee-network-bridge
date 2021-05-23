@@ -39,6 +39,10 @@ NOTE: the network and subnet parameters are optional and set to `default`.
 * [Install via scripts](./scripts)
 * [Install via Terraform](./terraform)
 
+## See Also
+
+Click [here](./tform-ilb) to setup an L7 ILB to Apigee
+Click [here](./mtls) to setup mTLS to Apigee
 ___
 
 ## Support
