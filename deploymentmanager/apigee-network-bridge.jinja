@@ -1,0 +1,201 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+{% set domain = env['project'].split(':') %}
+{% if domain|length >1 %}
+{% set projectName = domain[1] + '.' + domain[0] %}
+{% else %}
+{% set projectName = domain[0] %}
+{% endif %}
+{% set suffix = (range(1001,10000) | random | string) %}
+{% set DEPLOYMENT_NAME = env["deployment"] %}
+{% set SERVICE_ACCOUNT = properties['serviceAccount']%}
+{% set DOMAIN = properties['domain']%}
+{% set REGION = properties["zone"][0:-2] %}
+
+resources:
+- name: {{ DEPLOYMENT_NAME }}-it
+  type: compute.v1.instanceTemplate
+  properties:
+    properties:
+      machineType: e2-medium
+      scheduling:
+        preemptible: true
+      tags:
+        items:
+        - https-server
+        - apigee-envoy-proxy
+        - gke-apigee-proxy
+        - {{ DEPLOYMENT_NAME }}-instances
+      disks:
+        - deviceName: boot
+          type: PERSISTENT
+          boot: true
+          autoDelete: true
+          initializeParams:
+            diskSizeGb: 20
+            sourceImage: projects/debian-cloud/global/images/family/debian-10
+      networkInterfaces:
+      {% if properties["subnetwork"] %}
+      - subnetwork: {{ properties["subnetwork"] or '' }}
+        accessConfigs:
+        - type: ONE_TO_ONE_NAT
+      {% else %}
+      - network: {{ properties["network"] }}
+        accessConfigs:
+        - type: ONE_TO_ONE_NAT
+      {% endif %}
+      metadata:
+        kind: compute#metadata
+        items:
+        - key: startup-script-url
+          value: gs://bap-marketplace/apigee-network-bridge/startup.sh
+        - key: google-logging-enable
+          value: {{ "1" if properties["enableCloudLogging"] else "0" }}
+        - key: google-monitoring-enable
+          value: {{ "1" if properties["enableCloudMonitoring"] else "0" }}
+      serviceAccounts:
+        - email: {{ SERVICE_ACCOUNT }}
+          scopes:
+            - 'https://www.googleapis.com/auth/cloud-platform'
+
+
+- name: {{ DEPLOYMENT_NAME }}-hc
+  type: compute.v1.healthChecks
+  properties:
+    timeoutSec: 10
+    unhealthyThreshold: 10
+    checkIntervalSec: 30
+    healthyThreshold: 2
+    type: "HTTPS"
+    httpsHealthCheck:
+      host: ""
+      port: 443
+      requestPath: /healthz/ingress
+      proxyHeader: NONE
+
+- name: {{ DEPLOYMENT_NAME }}-igm
+  type: compute.v1.regionInstanceGroupManager
+  properties:
+    baseInstanceName: {{ DEPLOYMENT_NAME }}-instance
+    instanceTemplate: $(ref.{{ DEPLOYMENT_NAME }}-it.selfLink)
+    targetSize: 2
+    region: {{ REGION }}
+    namedPorts:
+    - name: {{ DEPLOYMENT_NAME }}-https-port
+      port: 443
+    autoHealingPolicies:
+    - initialDelaySec: 180
+      healthCheck: $(ref.{{ DEPLOYMENT_NAME }}-hc.selfLink)
+
+- name: {{ DEPLOYMENT_NAME }}-as
+  type: compute.v1.regionAutoscalers
+  properties:
+    region: {{ REGION }}
+    target: $(ref.{{ DEPLOYMENT_NAME }}-igm.selfLink)
+    autoscalingPolicy:
+      maxNumReplicas: 5
+      cpuUtilization:
+        utilizationTarget: 0.75
+      coolDownPeriodSec: 90
+
+- name: {{ DEPLOYMENT_NAME }}-fw
+  type: compute.v1.firewall
+  properties:
+    direction: INGRESS
+    targetTags:
+    - {{ DEPLOYMENT_NAME }}-instances
+    allowed:
+    - IPProtocol: TCP
+      ports:
+      - 443
+    network: {{ properties["network"]  }}
+    sourceRanges:
+    - 130.211.0.0/22
+    - 35.191.0.0/16
+    - 209.85.152.0/22
+    - 209.85.204.0/22
+
+- name: {{ DEPLOYMENT_NAME }}-bes
+  type: compute.v1.backendService
+  properties:
+    protocol: HTTPS
+    portName: {{ DEPLOYMENT_NAME }}-https-port
+    backends:
+      - name: {{ DEPLOYMENT_NAME }}-primary
+        group: $(ref.{{ DEPLOYMENT_NAME }}-igm.instanceGroup)
+    healthChecks: [ $(ref.{{ DEPLOYMENT_NAME }}-hc.selfLink) ]
+    sessionAffinity: NONE
+
+- name: {{ DEPLOYMENT_NAME }}-externalip
+  type: compute.v1.globalAddresses
+  properties:
+    networkTier: PREMIUM
+    addressType: EXTERNAL
+
+
+- name: {{ DEPLOYMENT_NAME }}-sslcerts
+  type: compute.v1.sslCertificates
+  properties:
+    type: MANAGED
+    managed:
+      domains:
+  {% if properties['domain'] %}
+      - {{ properties['domain'] }}
+  {% else %}
+      - $(ref.{{ DEPLOYMENT_NAME }}-externalip.address).xip.io
+  {% endif %}
+
+
+- name: {{ DEPLOYMENT_NAME }}-urlmap
+  type: compute.v1.urlMap
+  properties:
+    defaultService: $(ref.{{ DEPLOYMENT_NAME }}-bes.selfLink)
+
+- name: {{ DEPLOYMENT_NAME }}-targetproxy
+  type: compute.v1.targetHttpsProxy
+  properties:
+    urlMap: $(ref.{{ DEPLOYMENT_NAME }}-urlmap.selfLink)
+    sslCertificates:
+    - $(ref.{{ DEPLOYMENT_NAME }}-sslcerts.selfLink)
+
+- name: {{ DEPLOYMENT_NAME }}-forwardingrule
+  type: compute.v1.globalForwardingRules
+  properties:
+    loadBalancingScheme: EXTERNAL
+    target: $(ref.{{ DEPLOYMENT_NAME }}-targetproxy.selfLink)
+    IPAddress: $(ref.{{ DEPLOYMENT_NAME }}-externalip.selfLink)
+    IPProtocol: TCP
+    portRange: 443
+    networkTier: PREMIUM
+
+outputs:
+  - name: domain
+  {% if properties['domain'] %}
+    value: {{ properties['domain'] }}
+  {% else %}
+    value: {{ projectName }}-eval.apigee.net
+  {% endif %}
+  - name: externalIP
+    value: $(ref.{{ DEPLOYMENT_NAME }}-externalip.address)
+  - name: region
+    value: {{ REGION }}
+  - name: lb_name
+    value: {{ DEPLOYMENT_NAME }}-urlmap
+  - name: isCustomDomain
+  {% if properties['domain'] %}
+    value: True
+  {% else %}
+    value: False
+  {% endif %}

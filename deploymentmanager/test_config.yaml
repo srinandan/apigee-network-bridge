@@ -1,0 +1,15 @@
+imports:
+- path: apigee-network-bridge.jinja
+
+resources:
+- name: apigee-network-bridge
+  type: apigee-network-bridge.jinja
+  properties:
+    zone: us-east4-a
+    machineType: e2-medium
+    serviceAccount: apigee-network-bridge@project-id.iam.gserviceaccount.com
+    domain: ""
+    network: https://www.googleapis.com/compute/v1/projects/project-id/global/networks/default
+    subnetwork: https://www.googleapis.com/compute/v1/projects/project-id/regions/us-east4/subnetworks/default
+    enableCloudLogging: true
+    enableCloudMonitoring: true

@@ -1,0 +1,141 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+description:
+  author:
+    title: Apigee Network Bridge
+    descriptionHtml: >
+      The Apigee service when provisioned in GCP, it is available as a private service (behind an internal load balancer).
+      This solution provisions a managed instance group with NAT rules to forward API requests from an external load balancer to Apigee's internal load balancer.
+    shortDescription: Creates a network bridge between Google Cloud Load Balancer and Apigee public cloud running on GCP.
+    url: https://github.com/srinandan/apigee-network-bridge
+  descriptionHtml: Apigee Network Bridge
+  logo: '@media/apigee-logo.png'
+  tagline:
+  title: Apigee Network Bridge
+  url: https://github.com/srinandan/apigee-network-bridge
+  version: 1.0.0
+  softwareGroups:
+  - type: SOFTWARE_GROUP_OS
+    software:
+    - title: Debian
+      version: '10'
+  - software:
+    - title: Google-Fluentd
+      version: 1.8.6
+    - title: Stackdriver-Agent
+      version: 6.1.2
+  documentations:
+  - title: Apigee Network Bridge
+    url: https://github.com/srinandan/apigee-network-bridge
+    destinations:
+    - DESTINATION_CONFIGURATION
+    - DESTINATION_POST_DEPLOY
+  support:
+  - title: Support
+    descriptionHtml: >-
+      Google does not offer support for this solution.
+      <br/><br/>
+      For question about the Apigee network bridge community support is available. Details are listed <a href="https://github.com/srinandan/apigee-network-bridge">here</a>
+      <br/><br/>
+      If you are an Apigee customer, you can open a support ticket for any provisioning questions/issues related this solution.
+  icon: '@media/apigee-icon.png'
+
+input:
+  properties:
+    - name: zone
+      title: Zone of the Apigee Organization
+    - name: domain
+      title: Hostname for this installation
+      subtext: >
+        If blank it will auto provision <external-ip>.xip.io as the domain.
+        xip.io provides wildcard DNS for any IP Address. This is useful for testing.
+        You can modify this domain from the load balancer configuration after install.
+      section: NETWORKING
+    - name: machineType
+      title: Machine type
+    - name: serviceAccount
+      title: Service Account for GCE Instances
+      subtext: Service account will be used to access other Google APIs
+    - name: network
+      title: Network name
+      section: NETWORKING
+    - name: subnetwork
+      title: Subnetwork name
+      section: NETWORKING
+    - name: enableCloudLogging
+      title: Enable Cloud Logging
+      tooltip: 'Cloud Logging allows you to store, search, analyze, monitor, and alert on log data and events. <a href="https://cloud.google.com/logging/">Learn more</a>'
+      section: CLOUD_LOGGING_MONITORING
+    - name: enableCloudMonitoring
+      title: Enable Cloud Monitoring
+      tooltip: 'Cloud Monitoring provides visibility into the performance, uptime, and overall health of cloud-powered applications. <a href="https://cloud.google.com/monitoring/">Learn more</a>'
+      section: CLOUD_LOGGING_MONITORING
+  sections:
+    - name: NETWORKING
+      title: Networking
+    - name: CLOUD_LOGGING_MONITORING
+      title: Cloud Logging and Monitoring
+      subtext: Monitoring and management for services, containers, applications, and infrastructure
+runtime:
+  deployingMessage: Deployment can take several minutes to complete.
+  applicationTable:
+    rows:
+      - label: HostName configured
+        value: >
+          {{ outputs().domain }} (SSL cert provisioning may take upto 60 mins. Please check the loadbalancer configured)
+      - label: Instance Region
+        value: '{{ outputs().region }}'
+      - label: Instance machine type
+        value: '{{ properties().machineType }}'
+  primaryButton:
+    label: Validate the Load Balancer
+    type: TYPE_URL
+    action: "http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb_name}}"
+  suggestedActions:
+    - heading: Update DNS entry
+      description: >
+        Create an A record {{ outputs().domain }} to {{ outputs().externalIP }}
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Add domain to the environment group
+      description: >
+        Add the {{ outputs().domain }} to the environment group.
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Validate the Load Balancer
+      description: >
+        Verify the SSL certs have been provisioned on the Load Balancer
+        <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb_name}}">configuration page</a>
+    - heading: Upload your own certs
+      description: >
+        This solution will deploy Google-managed SSL certs.
+        If you want to use your own certificates for {{ outputs().domain }} you
+        can upload that to the <a href="http://console.cloud.google.com/net-services/loadbalancing/details/http/{{outputs().lb_name}}">load balancer configuration</a>.
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Make an API Call
+      description: >
+        curl -i https://{{ outputs().domain }}/hello-world <br/>
+      showIf: '{{ outputs().isCustomDomain }}'
+    - heading: Make an API Call
+      description: >
+        curl -i -k \<br/>
+          -H "Host: {{ outputs().domain }}" \<br/>
+          https://{{ outputs().externalIP }}/hello-world <br/>
+      showIf: '{{ ! outputs().isCustomDomain }}'
+    - heading: More Documentation
+      description: >-
+        For more information please visit our solutions page <a href="https://github.com/srinandan/apigee-network-bridge">here</a>.
+annotations:
+  autogenSpecType: 'MULTI_VM'
+  vmImage0: https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/family/debian-10
+metadata_version: v1

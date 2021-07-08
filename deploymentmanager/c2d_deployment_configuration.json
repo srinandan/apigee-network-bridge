@@ -1,0 +1,7 @@
+{
+  "defaultDeploymentType": "MULTI_VM",
+  "imageName": "apigee-network-bridge",
+  "projectId": "bap-marketplace",
+  "templateName": "nonexistent_template",
+  "useSolutionPackage": true
+}
