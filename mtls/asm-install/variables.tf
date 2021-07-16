@@ -16,7 +16,7 @@ variable "zone" {
 
 variable "project" {
   type        = string
-  default     = "srinandans-apigee"
+  default     = "project-name"
   description = "Project ID where Terraform is authenticated to run to create additional projects. If provided, Terraform will create the GKE cluster inside this project."
 }
 
@@ -41,12 +41,12 @@ variable "kubernetes_cluster_name" {
 
 variable "apigee_instance_dns" {
   type        = string
-  default     = "api.srinandans-apigee.internal"
+  default     = "api.project-name.internal"
   description = "DNS entry for the Apigee instance"
 }
 
 variable "apigee_external_name" {
   type        = string
-  default     = "api.srinandans-apigee.com"
+  default     = "api.project-name.com"
   description = "External DNS name for Apigee"
 }

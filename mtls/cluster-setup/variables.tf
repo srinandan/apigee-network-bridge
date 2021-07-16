@@ -16,7 +16,7 @@ variable "zone" {
 
 variable "project" {
   type        = string
-  default     = "srinandans-apigee"
+  default     = "project-id"
   description = "Project ID where Terraform is authenticated to run to create additional projects. If provided, Terraform will create the GKE cluster inside this project."
 }
 
@@ -32,16 +32,11 @@ variable "subnetwork" {
   description = "The subnet used by the load balancer"
 }
 
-variable "kubernetes_secrets_crypto_key" {
-  type        = string
-  default     = "kubernetes-secrets"
-  description = "Name of the KMS key to use for encrypting the Kubernetes database."
-}
-
 # Define the IP Address for Apigee's instance (https://cloud.google.com/apigee/docs/reference/apis/apigee/rest/v1/organizations.instances/list)
 variable "apigee_region_endpoint" {
   type        = string
-  default     = "10.5.0.2"
+  #default     = "10.5.0.2"
+  default     = "10.89.180.2"
   description = "Private IP Address where Apigee is provisioned"  
 }
 

@@ -33,6 +33,9 @@ data "google_kms_key_ring" "gke-database" {
   project  = var.project
 
   depends_on = [google_project_service.service]
+  # lifecycle {
+  #   prevent_destroy = true
+  # }  
 }
 
 # Create the crypto key for encrypting init keys
@@ -42,9 +45,9 @@ data "google_kms_crypto_key" "gke-database" {
   key_ring        = data.google_kms_key_ring.gke-database.self_link
 #  key_ring        = google_kms_key_ring.gke-database.id
 #  rotation_period = "604800s"
-#  lifecycle {
-#    prevent_destroy = true
-#  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # Grant service account access to crypto key for GKE database encryption

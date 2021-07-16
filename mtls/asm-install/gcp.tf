@@ -74,11 +74,20 @@ data "template_file" "destinationrules-manifest" {
 module "asm" {
   source           = "terraform-google-modules/kubernetes-engine/google//modules/asm"
 
-  project_id       = var.project
-  cluster_name     = var.kubernetes_cluster_name
-  location         = var.zone
-  cluster_endpoint = data.google_container_cluster.apigee-mtls.endpoint
-  managed          = false #can be changed to true
+  project_id             = var.project
+  cluster_name           = var.kubernetes_cluster_name
+  location               = var.zone
+  cluster_endpoint       = data.google_container_cluster.apigee-mtls.endpoint
+  # managed                = false 
+  enable_all             = false
+  enable_cluster_roles   = true
+  enable_cluster_labels  = true
+  enable_gcp_apis        = true
+  enable_gcp_iam_roles   = false
+  enable_gcp_components  = true
+  enable_registration    = false  
+  managed_control_plane  = false #can be changed to true
+  skip_validation        = true
 }
 
 resource "kubectl_manifest" "gateway" {
@@ -100,7 +109,7 @@ resource "kubectl_manifest" "destinationrules" {
 #NOTE: This part has not been tested.
 module "kubectl" {
   source = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
-
+  use_existing_context    = true
   project_id              = var.project
   cluster_name            = var.kubernetes_cluster_name
   cluster_location        = var.zone
